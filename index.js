@@ -17,18 +17,23 @@ app.post('/api/notifs', function(req, res) {
   client.get(req.body.id, function(err, reply) {
     //the user already has some unread notifs
     if(reply !== null) {
-      client.set(req.body.id, reply.concat(req.body.notifs), redis.print);
+    client.set(req.body.id, reply.concat(req.body.notifs).toString(), redis.print);
     } else {
-      client.set(req.body.id, req.body, redis.print);
+      client.set(req.body.id, req.body.notifs.toString(), redis.print);
     }
   });
   console.log(req.body.id);
 
   res.send('ok');
-  //var id = req.id;
-  //var data = req.data;
+});
 
-
+app.get('/:id/notifs', function(req, res) {
+  client.get(req.params.id, function(err, reply) {
+    res.json(reply);
+    client.del(req.params.id, function(err, reply) {
+      console.log(reply);
+    });
+  });
 });
 
 
