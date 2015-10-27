@@ -14,15 +14,24 @@ app.get('/', function (req, res) {
 
 app.post('/api/notifs', function(req, res) {
 
+  console.log(req.body.id);
   client.get(req.body.id, function(err, reply) {
     //the user already has some unread notifs
     if(reply !== null) {
-    client.set(req.body.id, reply.concat(req.body.notifs).toString(), redis.print);
+
+      var obj = JSON.parse(reply);
+      //console.log(obj);
+      obj.push(req.body.notifs[0]);
+      client.set(req.body.id, JSON.stringify(obj), redis.print);
+
     } else {
-      client.set(req.body.id, req.body.notifs.toString(), redis.print);
+      var arr = [];
+      arr.push(req.body.notifs[0]);
+      client.set(req.body.id, JSON.stringify(arr), redis.print);
     }
   });
-  console.log(req.body.id);
+
+  console.log(req.body.notifs);
 
   res.send('ok');
 });
